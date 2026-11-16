@@ -18,7 +18,7 @@
  * FIFO circular buffer of body types, protected by a mutex,
  * with condition variables for producers (per body type) and consumers.
  */
-typedef struct {
+struct BodyConveyor {
   BodyType *buffer;            /* circular buffer (heap allocated)         */
   unsigned int capacity;       /* BODY_CONVEYOR_CAPACITY                    */
   unsigned int head;           /* index of next body to remove              */
@@ -39,13 +39,13 @@ typedef struct {
   pthread_mutex_t mutex;
   pthread_cond_t  roomFor[BodyTypeN];  /* producer of type t waits here     */
   pthread_cond_t  notEmpty;            /* paint robots wait here            */
-} BodyConveyor;
+};
 
 /*
  * Monitor for the paint conveyor (station 2 -> station 3).
  * FIFO circular buffer of painted-body names.
  */
-typedef struct {
+struct PaintConveyor {
   char (*buffer)[PAINTED_NAME_LEN];  /* circular buffer (heap allocated)    */
   unsigned int capacity;             /* PAINT_CONVEYOR_CAPACITY             */
   unsigned int head;
@@ -57,22 +57,22 @@ typedef struct {
   pthread_mutex_t mutex;
   pthread_cond_t  notFull;           /* paint robots wait here              */
   pthread_cond_t  notEmpty;          /* FinalLine waits here                */
-} PaintConveyor;
+};
 
 /* Everything shared among the worker threads */
-typedef struct {
+struct SharedData {
   BodyConveyor  bodyConveyor;
   PaintConveyor paintConveyor;
   unsigned int  productionLimit;
   sem_t         barrier;   /* posted by FinalLine after the last car */
-} SharedData;
+};
 
 /* Per-thread argument: shared data + thread-specific info */
-typedef struct {
+struct ThreadArgs {
   SharedData  *shared;
   int          id;         /* BodyType for welders, PaintRobotType for painters */
   unsigned int sleepMs;    /* simulated work time in milliseconds */
-} ThreadArgs;
+};
 
 /* Create / destroy the shared data structure */
 SharedData *shared_create(unsigned int productionLimit);

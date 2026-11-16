@@ -49,11 +49,11 @@ extern const char *paintedbody_consumerName;
  * Each body producer only produces one type of body,
  * so BodyType is synonymous with the producer type
  */
-typedef enum Bodies {
+enum BodyType {
   Sedan = 0,          // Sedan body (four-door, low roof line)
   SUV = 1,            // SUV body (tall body, larger frame)
   BodyTypeN = 2,      // number of body types
-} BodyType;
+};
 
 /*
  * Two consumers of bodies (threads) are paint robots
@@ -61,14 +61,14 @@ typedef enum Bodies {
  * These threads take the bodies off from the body conveyor
  * in the order that they are produced and placed on the conveyor (FIFO).
 */
-typedef enum PaintRobots {
+enum PaintRobotType {
   AquaCoat = 0,            // AquaCoat paint robot (water-based coat)
   PrimeSpray = 1,          // PrimeSpray paint robot (primer + spray coat)
   PaintRobotTypeN = 2,     // Number of body consumers / painted body producers
-} PaintRobotType;
+};
 
 
-typedef struct {
+struct BodyAdded {
   // What kind of body was produced?
   BodyType type;
   // Array of number of bodies of each type that have been produced
@@ -77,9 +77,9 @@ typedef struct {
   // on the body conveyor and have not yet been consumed.
   // (inQueue[Sedan] and inQueue[SUV])
   unsigned int *inQueue;
-} BodyAdded;
+};
 
-typedef struct {
+struct BodyRemoved {
   // Who removed and processed the body?
   PaintRobotType consumer;
   // What kind of body was removed?  As each consumer consumes
@@ -92,6 +92,6 @@ typedef struct {
   // on the body conveyor and have not yet been consumed.
   // (inQueue[Sedan] and inQueue[SUV])
   unsigned int *inQueue;
-} BodyRemoved;
+};
 
 #endif
