@@ -35,7 +35,7 @@ SharedData *shared_create(unsigned int productionLimit) {
   /* ---- paint conveyor ---- */
   PaintConveyor *pc = &s->paintConveyor;
   pc->capacity = PAINT_CONVEYOR_CAPACITY;
-  pc->buffer = calloc(pc->capacity, sizeof(*pc->buffer));
+  pc->buffer = (char (*)[PAINTED_NAME_LEN]) calloc(pc->capacity, sizeof(*pc->buffer));
   pc->head = pc->tail = pc->count = 0;
   pc->finished = 0;
   pthread_mutex_init(&pc->mutex, NULL);
