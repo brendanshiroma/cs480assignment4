@@ -28,7 +28,7 @@ void *body_producer(void *arg) {
     pthread_mutex_unlock(&bc->mutex);
 
     /* 2. simulate welding the body (outside the critical section) */
-    sleep_ms(args->sleepMs);
+    sleep_ms(args->sleepTime);
 
     /* 3. put the body on the conveyor */
     pthread_mutex_lock(&bc->mutex);

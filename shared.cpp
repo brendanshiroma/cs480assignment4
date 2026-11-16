@@ -42,9 +42,6 @@ SharedData *shared_create(unsigned int productionLimit) {
   pthread_cond_init(&pc->notFull, NULL);
   pthread_cond_init(&pc->notEmpty, NULL);
 
-  /* ---- barrier for main thread (precedence constraint) ---- */
-  sem_init(&s->barrier, 0, 0);
-
   return s;
 }
 
@@ -67,7 +64,6 @@ void shared_destroy(SharedData *s) {
   pthread_mutex_destroy(&pc->mutex);
   free(pc->buffer);
 
-  sem_destroy(&s->barrier);
   free(s);
 }
 

@@ -58,7 +58,7 @@ void *body_consumer(void *arg) {
     pthread_mutex_unlock(&bc->mutex);
 
     /* 2. simulate painting (consuming body / producing painted body) */
-    sleep_ms(args->sleepMs);
+    sleep_ms(args->sleepTime);
 
     char painted[PAINTED_NAME_LEN];
     snprintf(painted, sizeof(painted), "%s%s",

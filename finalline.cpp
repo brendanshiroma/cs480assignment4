@@ -12,7 +12,7 @@
  *      in FIFO order, log, signal the paint robots.
  *   2. Install trim / inspect: sleep OUTSIDE the critical section.
  * After the last car (finished == production limit and conveyor empty),
- * signal the barrier so the main thread can finish.
+ * the thread returns; main() joins this thread to know when it's done.
  */
 void *paintedbody_consumer(void *arg) {
   ThreadArgs    *args   = (ThreadArgs *) arg;
@@ -40,7 +40,7 @@ void *paintedbody_consumer(void *arg) {
     pthread_mutex_unlock(&pc->mutex);
 
     /* 2. simulate trim install + inspection (outside critical section) */
-    sleep_ms(args->sleepMs);
+    sleep_ms(args->sleepTime);
 
     /* last car rolled off the line? */
     pthread_mutex_lock(&pc->mutex);
@@ -48,7 +48,5 @@ void *paintedbody_consumer(void *arg) {
     pthread_mutex_unlock(&pc->mutex);
   }
 
-  /* unblock the main thread */
-  sem_post(&shared->barrier);
   return NULL;
 }

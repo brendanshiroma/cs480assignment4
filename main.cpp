@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pthread.h>
-#include <semaphore.h>
 
 #include "shared.h"
 #include "producer.h"
@@ -64,8 +63,8 @@ int main(int argc, char *argv[]) {
   pthread_create(&primeSpray,  NULL, body_consumer,        &primeArgs);
   pthread_create(&finalLine,   NULL, paintedbody_consumer, &finalArgs);
 
-  /* barrier: block until FinalLine has finished the last car */
-  sem_wait(&shared->barrier);
+  /* block until FinalLine has finished the last car */
+  pthread_join(finalLine, NULL);
 
   /* final report */
   log_body_history(shared->bodyConveyor.produced,
@@ -77,7 +76,6 @@ int main(int argc, char *argv[]) {
   pthread_join(suvWelder,   NULL);
   pthread_join(aquaCoat,    NULL);
   pthread_join(primeSpray,  NULL);
-  pthread_join(finalLine,   NULL);
 
   shared_destroy(shared);
   return 0;

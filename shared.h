@@ -2,7 +2,6 @@
 #define SHARED_H
 
 #include <pthread.h>
-#include <semaphore.h>
 
 #include "car_assembly.h"
 
@@ -64,14 +63,13 @@ struct SharedData {
   BodyConveyor  bodyConveyor;
   PaintConveyor paintConveyor;
   unsigned int  productionLimit;
-  sem_t         barrier;   /* posted by FinalLine after the last car */
 };
 
 /* Per-thread argument: shared data + thread-specific info */
 struct ThreadArgs {
   SharedData  *shared;
   int          id;         /* BodyType for welders, PaintRobotType for painters */
-  unsigned int sleepMs;    /* simulated work time in milliseconds */
+  unsigned int sleepTime;  /* simulated work time in milliseconds */
 };
 
 /* Create / destroy the shared data structure */
