@@ -13,34 +13,34 @@ SharedData *shared_create(unsigned int productionLimit) {
   s->productionLimit = productionLimit;
 
   /* ---- body conveyor ---- */
-  BodyConveyor *bc = &s->bodyConveyor;
-  bc->capacity = BODY_CONVEYOR_CAPACITY;
-  bc->buffer = (BodyType *) calloc(bc->capacity, sizeof(BodyType));
-  bc->head = bc->tail = bc->count = 0;
-  bc->typeLimit[Sedan] = MAX_SEDAN_ON_CONVEYOR;
-  bc->typeLimit[SUV]   = MAX_SUV_ON_CONVEYOR;
+  BodyConveyor *b = &s->bodyConveyor;
+  b->capacity = BODY_CONVEYOR_CAPACITY;
+  b->buffer = (BodyType *) calloc(b->capacity, sizeof(BodyType));
+  b->head = b->tail = b->count = 0;
+  b->typeLimit[Sedan] = MAX_SEDAN_ON_CONVEYOR;
+  b->typeLimit[SUV]   = MAX_SUV_ON_CONVEYOR;
   for (int t = 0; t < BodyTypeN; t++) {
-    bc->inQueue[t]  = 0;
-    bc->produced[t] = 0;
-    pthread_cond_init(&bc->roomFor[t], NULL);
+    b->inQueue[t]  = 0;
+    b->produced[t] = 0;
+    pthread_cond_init(&b->roomFor[t], NULL);
   }
-  bc->productionLimit = productionLimit;
-  bc->reserved = 0;
-  bc->taken = 0;
+  b->productionLimit = productionLimit;
+  b->reserved = 0;
+  b->taken = 0;
   for (int r = 0; r < PaintRobotTypeN; r++)
-    bc->consumed[r] = (unsigned int *) calloc(BodyTypeN, sizeof(unsigned int));
-  pthread_mutex_init(&bc->mutex, NULL);
-  pthread_cond_init(&bc->notEmpty, NULL);
+    b->consumed[r] = (unsigned int *) calloc(BodyTypeN, sizeof(unsigned int));
+  pthread_mutex_init(&b->mutex, NULL);
+  pthread_cond_init(&b->notEmpty, NULL);
 
   /* ---- paint conveyor ---- */
-  PaintConveyor *pc = &s->paintConveyor;
-  pc->capacity = PAINT_CONVEYOR_CAPACITY;
-  pc->buffer = (char (*)[PAINTED_NAME_LEN]) calloc(pc->capacity, sizeof(*pc->buffer));
-  pc->head = pc->tail = pc->count = 0;
-  pc->finished = 0;
-  pthread_mutex_init(&pc->mutex, NULL);
-  pthread_cond_init(&pc->notFull, NULL);
-  pthread_cond_init(&pc->notEmpty, NULL);
+  PaintConveyor *p = &s->paintConveyor;
+  p->capacity = PAINT_CONVEYOR_CAPACITY;
+  p->buffer = (char (*)[PAINTED_NAME_LEN]) calloc(p->capacity, sizeof(*p->buffer));
+  p->head = p->tail = p->count = 0;
+  p->finished = 0;
+  pthread_mutex_init(&p->mutex, NULL);
+  pthread_cond_init(&p->notFull, NULL);
+  pthread_cond_init(&p->notEmpty, NULL);
 
   return s;
 }
@@ -49,20 +49,20 @@ void shared_destroy(SharedData *s) {
   if (s == NULL)
     return;
 
-  BodyConveyor *bc = &s->bodyConveyor;
+  BodyConveyor *b = &s->bodyConveyor;
   for (int t = 0; t < BodyTypeN; t++)
-    pthread_cond_destroy(&bc->roomFor[t]);
-  pthread_cond_destroy(&bc->notEmpty);
-  pthread_mutex_destroy(&bc->mutex);
+    pthread_cond_destroy(&b->roomFor[t]);
+  pthread_cond_destroy(&b->notEmpty);
+  pthread_mutex_destroy(&b->mutex);
   for (int r = 0; r < PaintRobotTypeN; r++)
-    free(bc->consumed[r]);
-  free(bc->buffer);
+    free(b->consumed[r]);
+  free(b->buffer);
 
-  PaintConveyor *pc = &s->paintConveyor;
-  pthread_cond_destroy(&pc->notFull);
-  pthread_cond_destroy(&pc->notEmpty);
-  pthread_mutex_destroy(&pc->mutex);
-  free(pc->buffer);
+  PaintConveyor *p = &s->paintConveyor;
+  pthread_cond_destroy(&p->notFull);
+  pthread_cond_destroy(&p->notEmpty);
+  pthread_mutex_destroy(&p->mutex);
+  free(p->buffer);
 
   free(s);
 }
